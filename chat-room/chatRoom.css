@@ -1,0 +1,26 @@
+#contain{
+    width:860px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+#main{
+    margin-top:40px;
+}
+#left{
+    width: 500px;
+    float: left;
+    padding-left: 10px;
+}
+#right{
+    width: 360px;
+    float: right;
+}
+label{
+    width:70px;
+    display: inline-block;
+    text-align: right;
+}
+.form-control-new{
+    width:200px;
+    display: inline-block;
+}

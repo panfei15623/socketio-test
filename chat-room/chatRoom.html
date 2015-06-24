@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>聊天室</title>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css"/>
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/ko"></script>
+</head>
+<body>
+<div id="contain">
+    <h2>socket.io聊天室</h2>
+    <div id="main">
+        <div id="left">
+            <div class="form-group">
+                <label for="name">姓名:</label>
+                <input type="text" id="name" class="form-control form-control-new" placeholder="输入姓名"/>
+                <button class="btn btn-success" onclick="joinRoom()">加入房间</button>
+            </div>
+            <div class="form-group">
+                <label for="toperson">发送至:</label>
+                <input type="text" id="toperson" class="form-control form-control-new" placeholder="输入接收消息的人" data-bind="value:selectedName"/>
+            </div>
+            <div class="form-group">
+                <label for="message">发送内容:</label>
+                <input type="text" id="message" class="form-control form-control-new" placeholder="输入发送的内容"/>
+                <button class="btn btn-success" style="padding: 6px 27px" onclick="sendMessage()">发送</button>
+            </div>
+            <div class="form-group">
+                <label for="receive" style="vertical-align: top">接收内容:</label>
+                <div id="receive" class="form-control form-control-new" style="width: 290px;height:100px"></div>
+            </div>
+        </div>
+        <div id="right">
+            <h3 style="margin-top: 0px">房间中的人</h3>
+            <select multiple="multiple" size="9" style="width: 250px;padding: 10px;margin-bottom: 10px" data-bind="options:optionName,
+                                                                                    selectedOptions: selectedName
+            ">
+            </select>
+        </div>
+    </div>
+</div>
+<script>
+    function viewModel(){
+        this.optionName = ko.observableArray();
+        this.selectedName = ko.observableArray();
+    }
+    var view = new viewModel();
+    ko.applyBindings(view);
+
+    var log = function(message){
+        if(window.console && window.console.log){
+            console.log(message);
+        }
+    }
+    var socket = io();
+    socket.on("connect",function(){
+        log("socket connected.");
+    })
+    socket.on("receive",function(data){
+        log(data);
+    })
+    socket.on("message", function(data) {
+        $("#receive").text(data);
+    });
+    socket.on("joined",function(data){
+        view.optionName(data);
+    })
+    function joinRoom(){
+        var name = $("#name").val();
+        socket.emit("join",name);
+    }
+    function sendMessage(){
+        var message = $("#message").val();
+        var toperson = $("#toperson").val();
+        socket.emit("message",{
+            toperson: toperson,
+            message: message
+        })
+    }
+</script>
+</body>
+</html>

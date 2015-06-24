@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+    <style>
+        body {
+            font-family: "Microsoft Yahei";
+            padding: 0 10px;
+        }
+    </style>
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var log = function(message) {
+            if (window.console && window.console.log) {
+                console.log(message);
+            }
+        };
+
+        var socket = io();
+        socket.on("connect", function() {
+            log("socket connected.");
+        });
+
+        socket.on("message", function(data) {
+            log("收到消息: " + data);
+        });
+
+        function joinRoom() {
+            var myName = $("#nameInput").val();
+            socket.emit("join", myName);
+        }
+
+        function sendMessage() {
+            var to = $("#toInput").val();
+            var message = $("#messageInput").val();
+            socket.emit("message", {
+                to : to,
+                message : message
+            });
+        }
+    </script>
+</head>
+<body>
+<h2>socket.io 聊天室</h2>
+<hr/>
+<p class="form-inline">
+    <label for="nameInput">输入你的名字: </label>
+    <input type="text" id="nameInput" class="form-control"/>
+    <button class="btn btn-success" onclick="joinRoom()">加入房间</button>
+</p>
+
+<p class="form-inline">
+    <input type="text" id="messageInput" class="form-control" placeholder="输入要发送的消息"/>
+    <input type="text" id="toInput" class="form-control" placeholder="发给谁"/>
+    <button class="btn btn-success" onclick="sendMessage()">发送</button>
+</p>
+</body>
+</html>
